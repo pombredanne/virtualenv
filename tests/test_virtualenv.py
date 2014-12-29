@@ -68,7 +68,7 @@ def test_activate_after_future_statements():
         'from __future__ import with_statement',
         'from __future__ import print_function',
         '',
-        "import os; activate_this=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'activate_this.py'); execfile(activate_this, dict(__file__=activate_this)); del os, activate_this",
+        "import os; activate_this=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'activate_this.py'); exec(compile(open(activate_this).read(), activate_this, 'exec'), dict(__file__=activate_this)); del os, activate_this",
         '',
         'print("Hello, world!")'
     ]
@@ -97,8 +97,8 @@ def test_cop_update_defaults_with_store_false():
     cop.update_defaults(defaults)
     assert defaults == {'system_site_packages': 0}
 
-def test_install_python_symlinks():
-    """Should create the right symlinks in bin_dir"""
+def test_install_python_bin():
+    """Should create the right python executables and links"""
     tmp_virtualenv = tempfile.mkdtemp()
     try:
         home_dir, lib_dir, inc_dir, bin_dir = \
@@ -106,15 +106,34 @@ def test_install_python_symlinks():
         virtualenv.install_python(home_dir, lib_dir, inc_dir, bin_dir, False,
                                   False)
 
-        py_exe_no_version = 'python'
-        py_exe_version_major = 'python%s' % sys.version_info[0]
-        py_exe_version_major_minor = 'python%s.%s' % (
-            sys.version_info[0], sys.version_info[1])
-        required_executables = [ py_exe_no_version, py_exe_version_major,
-                         py_exe_version_major_minor ]
+        if virtualenv.is_win:
+            required_executables = [ 'python.exe', 'pythonw.exe']
+        else:
+            py_exe_no_version = 'python'
+            py_exe_version_major = 'python%s' % sys.version_info[0]
+            py_exe_version_major_minor = 'python%s.%s' % (
+                sys.version_info[0], sys.version_info[1])
+            required_executables = [ py_exe_no_version, py_exe_version_major,
+                                     py_exe_version_major_minor ]
 
         for pth in required_executables:
             assert os.path.exists(os.path.join(bin_dir, pth)), ("%s should "
                             "exist in bin_dir" % pth)
+    finally:
+        shutil.rmtree(tmp_virtualenv)
+
+
+def test_always_copy_option():
+    """Should be no symlinks in directory tree"""
+    tmp_virtualenv = tempfile.mkdtemp()
+    ve_path = os.path.join(tmp_virtualenv, 'venv')
+    try:
+        virtualenv.create_environment(ve_path, symlink=False)
+
+        for root, dirs, files in os.walk(tmp_virtualenv):
+            for f in files + dirs:
+                full_name = os.path.join(root, f)
+                assert not os.path.islink(full_name), "%s should not be a" \
+                    " symlink (to %s)" % (full_name, os.readlink(full_name))
     finally:
         shutil.rmtree(tmp_virtualenv)

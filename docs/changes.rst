@@ -1,18 +1,166 @@
-Changes & News
---------------
+Release History
+===============
 
-.. warning::
+12.1.0 (unreleased)
+~~~~~~~~~~~~~~~~~~~
 
-   Python bugfix releases 2.6.8, 2.7.3, 3.1.5 and 3.2.3 include a change that
-   will cause "import random" to fail with "cannot import name urandom" on any
-   virtualenv created on a Unix host with an earlier release of Python
-   2.6/2.7/3.1/3.2, if the underlying system Python is upgraded. This is due to
-   the fact that a virtualenv uses the system Python's standard library but
-   contains its own copy of the Python interpreter, so an upgrade to the system
-   Python results in a mismatch between the version of the Python interpreter
-   and the version of the standard library. It can be fixed by removing
-   ``$ENV/bin/python`` and re-running virtualenv on the same target directory
-   with the upgraded Python.
+12.0.4 (2014-22-23)
+~~~~~~~~~~~~~~~~~~~
+
+* Revert the fix to ``-p`` on Debian based pythons as it was broken in other
+  situations.
+
+* Revert several sys.path changes new in 12.0 which were breaking virtualenv.
+
+12.0.3 (2014-22-23)
+~~~~~~~~~~~~~~~~~~~
+
+* Fix an issue where Debian based Pythons would fail when using -p with the
+  host Python.
+
+* Upgrade pip to 6.0.3
+
+12.0.2 (2014-12-23)
+~~~~~~~~~~~~~~~~~~~
+
+* Upgraded pip to 6.0.2
+
+12.0.1 (2014-12-22)
+~~~~~~~~~~~~~~~~~~~
+
+* Upgraded pip to 6.0.1
+
+
+12.0 (2014-12-22)
+~~~~~~~~~~~~~~~~~
+
+* **PROCESS** Version numbers are now simply ``X.Y`` where the leading ``1``
+  has been dropped.
+* Split up documentation into structured pages
+* Now using pytest framework
+* Correct sys.path ordering for debian, issue #461
+* Correctly throws error on older Pythons, issue #619
+* Allow for empty $PATH, pull #601
+* Don't set prompt if $env:VIRTUAL_ENV_DISABLE_PROMPT is set for Powershell
+* Updated setuptools to 7.0
+
+1.11.6 (2014-05-16)
+~~~~~~~~~~~~~~~~~~~
+
+* Updated setuptools to 3.6
+* Updated pip to 1.5.6
+
+1.11.5 (2014-05-03)
+~~~~~~~~~~~~~~~~~~~
+
+* Updated setuptools to 3.4.4
+* Updated documentation to use https://virtualenv.pypa.io/
+* Updated pip to 1.5.5
+
+1.11.4 (2014-02-21)
+~~~~~~~~~~~~~~~~~~~
+
+* Updated pip to 1.5.4
+
+
+1.11.3 (2014-02-20)
+~~~~~~~~~~~~~~~~~~~
+
+* Updated setuptools to 2.2
+* Updated pip to 1.5.3
+
+
+1.11.2 (2014-01-26)
+~~~~~~~~~~~~~~~~~~~
+
+* Fixed easy_install installed virtualenvs by updated pip to 1.5.2
+
+1.11.1 (2014-01-20)
+~~~~~~~~~~~~~~~~~~~
+
+* Fixed an issue where pip and setuptools were not getting installed when using
+  the ``--system-site-packages`` flag.
+* Updated setuptools to fix an issue when installed with easy_install
+* Fixed an issue with Python 3.4 and sys.stdout encoding being set to ascii
+* Upgraded pip to v1.5.1
+* Upgraded setuptools to v2.1
+
+1.11 (2014-01-02)
+~~~~~~~~~~~~~~~~~
+
+* **BACKWARDS INCOMPATIBLE** Switched to using wheels for the bundled copies of
+  setuptools and pip. Using sdists is no longer supported - users supplying
+  their own versions of pip/setuptools will need to provide wheels.
+* **BACKWARDS INCOMPATIBLE** Modified the handling of ``--extra-search-dirs``.
+  This option now works like pip's ``--find-links`` option, in that it adds
+  extra directories to search for compatible wheels for pip and setuptools.
+  The actual wheel selected is chosen based on version and compatibility, using
+  the same algorithm as ``pip install setuptools``.
+* Fixed #495, --always-copy was failing (#PR 511)
+* Upgraded pip to v1.5
+* Upgraded setuptools to v1.4
+
+1.10.1 (2013-08-07)
+~~~~~~~~~~~~~~~~~~~
+
+* **New Signing Key** Release 1.10.1 is using a different key than normal with
+  fingerprint: 7C6B 7C5D 5E2B 6356 A926 F04F 6E3C BCE9 3372 DCFA
+* Upgraded pip to v1.4.1
+* Upgraded setuptools to v0.9.8
+
+
+1.10 (2013-07-23)
+~~~~~~~~~~~~~~~~~
+
+* **BACKWARDS INCOMPATIBLE** Dropped support for Python 2.5. The minimum
+  supported Python version is now Python 2.6.
+
+* **BACKWARDS INCOMPATIBLE** Using ``virtualenv.py`` as an isolated script
+  (i.e. without an associated ``virtualenv_support`` directory) is no longer
+  supported for security reasons and will fail with an error.
+
+  Along with this, ``--never-download`` is now always pinned to ``True``, and
+  is only being maintained in the short term for backward compatibility
+  (Pull #412).
+
+* **IMPORTANT** Switched to the new setuptools (v0.9.7) which has been merged
+  with Distribute_ again and works for Python 2 and 3 with one codebase.
+  The ``--distribute`` and ``--setuptools`` options are now no-op.
+
+* Updated to pip 1.4.
+
+* Added support for PyPy3k
+
+* Added the option to use a version number with the ``-p`` option to get the
+  system copy of that Python version (Windows only)
+
+* Removed embedded ``ez_setup.py``, ``distribute_setup.py`` and
+  ``distribute_from_egg.py`` files as part of switching to merged setuptools.
+
+* Fixed ``--relocatable`` to work better on Windows.
+
+* Fixed issue with readline on Windows.
+
+.. _Distribute: https://pypi.python.org/pypi/distribute
+
+1.9.1 (2013-03-08)
+~~~~~~~~~~~~~~~~~~
+
+* Updated to pip 1.3.1 that fixed a major backward incompatible change of
+  parsing URLs to externally hosted packages that got accidentily included
+  in pip 1.3.
+
+1.9 (2013-03-07)
+~~~~~~~~~~~~~~~~
+
+* Unset VIRTUAL_ENV environment variable in deactivate.bat (Pull #364)
+* Upgraded distribute to 0.6.34.
+* Added ``--no-setuptools`` and ``--no-pip`` options (Pull #336).
+* Fixed Issue #373. virtualenv-1.8.4 was failing in cygwin (Pull #382).
+* Fixed Issue #378. virtualenv is now "multiarch" aware on debian/ubuntu (Pull #379).
+* Fixed issue with readline module path on pypy and OSX (Pull #374).
+* Made 64bit detection compatible with Python 2.5 (Pull #393).
+
 
 1.8.4 (2012-11-25)
 ~~~~~~~~~~~~~~~~~~
@@ -91,7 +239,7 @@ Changes & News
   Branden Rolston.
 
 * Fix a bug in the config option parser that prevented setting negative
-  options with environemnt variables. Thanks Ralf Schmitt.
+  options with environment variables. Thanks Ralf Schmitt.
 
 * Allow setting ``--no-site-packages`` from the config file.
 
@@ -227,7 +375,7 @@ Changes & News
 * Updated embedded pip release to 1.0.2.
 
 * Fixed #141 - Be smarter about finding pkg_resources when using the
-  non-default Python intepreter (by using the ``-p`` option).
+  non-default Python interpreter (by using the ``-p`` option).
 
 * Fixed #112 - Fixed path in docs.
 
